@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://adihasani3.github.io/Website-Gartenservice/sitemap.xml
+Sitemap: https://gruenprofi-backnang.de/sitemap.xml
