@@ -28,7 +28,7 @@
   // Contact form -> mailto (static site, no backend)
   var form = document.getElementById("kontakt-form");
   var status = document.getElementById("form-status");
-  var CONTACT_EMAIL = "Adihasani3@gmail.com";
+  var CONTACT_EMAIL = "Gruenpflegeprofide@gmail.com";
 
   if (form) {
     form.addEventListener("submit", function (event) {
