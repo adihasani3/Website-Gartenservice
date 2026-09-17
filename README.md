@@ -5,7 +5,7 @@ Eine professionelle, responsive Website für den Gartenservice **Grünprofi** in
 ## Inhalt
 
 - `index.html` – Startseite (Hero, Leistungen, Über uns, Ablauf, Einsatzgebiet, FAQ, Kontakt)
-- `impressum.html` – Impressum (Pflichtangaben nach § 5 TMG, teils als Platzhalter)
+- `impressum.html` – Impressum (Pflichtangaben nach § 5 TMG, vollständig ausgefüllt)
 - `datenschutz.html` – Datenschutzerklärung (DSGVO-Vorlage)
 - `css/style.css` – Styling
 - `js/script.js` – mobiles Menü, Kontaktformular (mailto), Header-Effekt
@@ -15,10 +15,9 @@ Eine professionelle, responsive Website für den Gartenservice **Grünprofi** in
 
 ## Vor dem Livegang unbedingt erledigen
 
-1. **Impressum vervollständigen** (`impressum.html`): vollständige ladungsfähige Anschrift und Name der verantwortlichen Person eintragen – gesetzlich vorgeschrieben (§ 5 TMG).
-2. **Kontaktdaten prüfen**: Telefon `0157 54613257` und E-Mail `Adihasani3@gmail.com` sind hinterlegt – bei Bedarf anpassen.
-3. **Domain registrieren**: Die Seite ist technisch auf `gruenprofi-backnang.de` vorbereitet (Meta-Tags, `sitemap.xml`, `robots.txt`, `CNAME`). Die Domain muss noch bei einem Registrar (z.&nbsp;B. IONOS, Strato, Namecheap) registriert werden – das kann Claude Code nicht automatisch für dich tun.
-4. **Social-Preview-Bild** (optional): `assets/og-image.png` (1200×630 px) ergänzen, damit Linkvorschauen in Social Media/Messengern ein Bild zeigen.
+1. **Domain registrieren**: Die Seite ist technisch auf `gruenprofi-backnang.de` vorbereitet (Meta-Tags, `sitemap.xml`, `robots.txt`, `CNAME`). Die Domain muss noch bei einem Registrar (z.&nbsp;B. IONOS, Strato, Namecheap) registriert werden – das kann Claude Code nicht automatisch für dich tun.
+2. **Social-Preview-Bild** (optional): `assets/og-image.png` (1200×630 px) ergänzen, damit Linkvorschauen in Social Media/Messengern ein Bild zeigen.
+3. **Kontaktdaten/Rechtsangaben bei Bedarf aktualisieren**: Telefon, E-Mail, Anschrift (Adrian Hasani, Stettiner Ring 11, 71522 Backnang) und Kleinunternehmerregelung (§ 19 UStG) sind in `impressum.html` und `datenschutz.html` hinterlegt.
 
 ## Deployment (Beispiel: GitHub Pages)
 
