@@ -25,10 +25,10 @@
     yearEl.textContent = new Date().getFullYear();
   }
 
-  // Contact form -> mailto (static site, no backend)
+  // Contact form -> n8n webhook (triggers an automatic confirmation email)
   var form = document.getElementById("kontakt-form");
   var status = document.getElementById("form-status");
-  var CONTACT_EMAIL = "Gruenpflegeprofide@gmail.com";
+  var N8N_WEBHOOK_URL = "https://adrian-business8.app.n8n.cloud/webhook/8db5c66b-eacf-4a4b-b307-8339cdbdf591";
 
   if (form) {
     form.addEventListener("submit", function (event) {
@@ -39,33 +39,48 @@
         return;
       }
 
-      var name = form.name.value.trim();
-      var email = form.email.value.trim();
-      var phone = form.phone.value.trim();
-      var service = form.service.value;
-      var message = form.message.value.trim();
+      var submitButton = form.querySelector("button[type='submit']");
+      var payload = {
+        name: form.name.value.trim(),
+        email: form.email.value.trim(),
+        phone: form.phone.value.trim(),
+        service: form.service.value,
+        message: form.message.value.trim(),
+        submittedAt: new Date().toISOString()
+      };
 
-      var subject = "Anfrage über die Website: " + service;
-      var bodyLines = [
-        "Name: " + name,
-        "E-Mail: " + email,
-        "Telefon: " + (phone || "-"),
-        "Gewünschte Leistung: " + service,
-        "",
-        "Nachricht:",
-        message
-      ];
-
-      var mailtoUrl =
-        "mailto:" + encodeURIComponent(CONTACT_EMAIL) +
-        "?subject=" + encodeURIComponent(subject) +
-        "&body=" + encodeURIComponent(bodyLines.join("\n"));
-
-      window.location.href = mailtoUrl;
-
-      if (status) {
-        status.textContent = "Ihr E-Mail-Programm wird geöffnet. Bitte senden Sie die vorausgefüllte Nachricht ab, um Ihre Anfrage zu übermitteln.";
+      if (submitButton) {
+        submitButton.disabled = true;
       }
+      if (status) {
+        status.textContent = "Ihre Anfrage wird gesendet ...";
+      }
+
+      // no-cors: the browser won't let us read the response from a
+      // cross-origin webhook, so we send the request and assume success —
+      // n8n takes it from here (confirmation email, notifying Grünprofi).
+      fetch(N8N_WEBHOOK_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      })
+        .then(function () {
+          if (status) {
+            status.textContent = "Danke! Ihre Anfrage ist eingegangen. Sie erhalten in Kürze eine Bestätigung per E-Mail.";
+          }
+          form.reset();
+        })
+        .catch(function () {
+          if (status) {
+            status.textContent = "Die Anfrage konnte nicht gesendet werden. Bitte rufen Sie uns an oder schreiben Sie direkt eine E-Mail.";
+          }
+        })
+        .finally(function () {
+          if (submitButton) {
+            submitButton.disabled = false;
+          }
+        });
     });
   }
 
