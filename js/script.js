@@ -40,14 +40,13 @@
       }
 
       var submitButton = form.querySelector("button[type='submit']");
-      var payload = {
-        name: form.name.value.trim(),
-        email: form.email.value.trim(),
-        phone: form.phone.value.trim(),
-        service: form.service.value,
-        message: form.message.value.trim(),
-        submittedAt: new Date().toISOString()
-      };
+      var params = new URLSearchParams();
+      params.append("name", form.name.value.trim());
+      params.append("email", form.email.value.trim());
+      params.append("phone", form.phone.value.trim());
+      params.append("service", form.service.value);
+      params.append("message", form.message.value.trim());
+      params.append("submittedAt", new Date().toISOString());
 
       if (submitButton) {
         submitButton.disabled = true;
@@ -56,14 +55,18 @@
         status.textContent = "Ihre Anfrage wird gesendet ...";
       }
 
+      // application/x-www-form-urlencoded is a CORS "simple" content type,
+      // so the browser sends it as-is even under no-cors (unlike
+      // application/json, which no-cors silently strips) — n8n's Webhook
+      // node parses this straight into $json.body.<field>.
       // no-cors: the browser won't let us read the response from a
       // cross-origin webhook, so we send the request and assume success —
       // n8n takes it from here (confirmation email, notifying Grünprofi).
       fetch(N8N_WEBHOOK_URL, {
         method: "POST",
         mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: params.toString()
       })
         .then(function () {
           if (status) {
