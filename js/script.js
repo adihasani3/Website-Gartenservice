@@ -40,14 +40,13 @@
       }
 
       var submitButton = form.querySelector("button[type='submit']");
-      var payload = {
-        name: form.name.value.trim(),
-        email: form.email.value.trim(),
-        phone: form.phone.value.trim(),
-        service: form.service.value,
-        message: form.message.value.trim(),
-        submittedAt: new Date().toISOString()
-      };
+      var params = new URLSearchParams();
+      params.append("name", form.name.value.trim());
+      params.append("email", form.email.value.trim());
+      params.append("phone", form.phone.value.trim());
+      params.append("service", form.service.value);
+      params.append("message", form.message.value.trim());
+      params.append("submittedAt", new Date().toISOString());
 
       if (submitButton) {
         submitButton.disabled = true;
@@ -56,19 +55,21 @@
         status.textContent = "Ihre Anfrage wird gesendet ...";
       }
 
-      // mode "cors" (not "no-cors") so the Content-Type header actually
-      // reaches n8n as application/json and we can read a real
-      // success/failure response, instead of guessing.
+      // n8n's webhook doesn't answer the CORS preflight that a real
+      // "application/json" + mode:"cors" request needs, so the browser
+      // blocks the request before it's even sent. Using
+      // application/x-www-form-urlencoded keeps this a CORS "simple"
+      // request (no preflight) and no-cors lets it through reliably;
+      // n8n still parses it straight into $json.body.<field>. Trade-off:
+      // we can't read a real success/failure response back, so we show
+      // an optimistic confirmation instead.
       fetch(N8N_WEBHOOK_URL, {
         method: "POST",
-        mode: "cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+        mode: "no-cors",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: params.toString()
       })
-        .then(function (response) {
-          if (!response.ok) {
-            throw new Error("n8n responded with status " + response.status);
-          }
+        .then(function () {
           if (status) {
             status.textContent = "Danke! Ihre Anfrage ist eingegangen. Sie erhalten in Kürze eine Bestätigung per E-Mail.";
           }
