@@ -28,7 +28,7 @@
   // Contact form -> n8n webhook (triggers an automatic confirmation email)
   var form = document.getElementById("kontakt-form");
   var status = document.getElementById("form-status");
-  var N8N_WEBHOOK_URL = "https://adrian-business8.app.n8n.cloud/webhook/8db5c66b-eacf-4a4b-b307-8339cdbdf591";
+  var N8N_WEBHOOK_URL = "https://adrian-business8.app.n8n.cloud/webhook/8b8918a7-6382-4124-8c05-3da3d6452b61";
 
   if (form) {
     form.addEventListener("submit", function (event) {
@@ -40,13 +40,14 @@
       }
 
       var submitButton = form.querySelector("button[type='submit']");
-      var params = new URLSearchParams();
-      params.append("name", form.name.value.trim());
-      params.append("email", form.email.value.trim());
-      params.append("phone", form.phone.value.trim());
-      params.append("service", form.service.value);
-      params.append("message", form.message.value.trim());
-      params.append("submittedAt", new Date().toISOString());
+      var payload = {
+        name: form.name.value.trim(),
+        email: form.email.value.trim(),
+        phone: form.phone.value.trim(),
+        service: form.service.value,
+        message: form.message.value.trim(),
+        submittedAt: new Date().toISOString()
+      };
 
       if (submitButton) {
         submitButton.disabled = true;
@@ -55,20 +56,19 @@
         status.textContent = "Ihre Anfrage wird gesendet ...";
       }
 
-      // application/x-www-form-urlencoded is a CORS "simple" content type,
-      // so the browser sends it as-is even under no-cors (unlike
-      // application/json, which no-cors silently strips) — n8n's Webhook
-      // node parses this straight into $json.body.<field>.
-      // no-cors: the browser won't let us read the response from a
-      // cross-origin webhook, so we send the request and assume success —
-      // n8n takes it from here (confirmation email, notifying Grünprofi).
+      // mode "cors" (not "no-cors") so the Content-Type header actually
+      // reaches n8n as application/json and we can read a real
+      // success/failure response, instead of guessing.
       fetch(N8N_WEBHOOK_URL, {
         method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: params.toString()
+        mode: "cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
       })
-        .then(function () {
+        .then(function (response) {
+          if (!response.ok) {
+            throw new Error("n8n responded with status " + response.status);
+          }
           if (status) {
             status.textContent = "Danke! Ihre Anfrage ist eingegangen. Sie erhalten in Kürze eine Bestätigung per E-Mail.";
           }
